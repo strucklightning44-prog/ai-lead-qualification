@@ -13,8 +13,9 @@ load_dotenv()
 # TELEGRAM SETTINGS
 # ==========================================
 
-TELEGRAM_BOT_TOKEN = "8917109595:AAFLK_UnZ-JXuPpvZkmzUdB2UhjkuX4hF2g"
-TELEGRAM_CHAT_ID = "7401638834"
+
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 
 # ==========================================
