@@ -1,17 +1,16 @@
 from flask import Flask, request, jsonify
-import requests
-from datetime import datetime
-import json
-import sqlite3
 from dotenv import load_dotenv
+from datetime import datetime
 import os
 from functools import wraps
 from qualification import qualify_lead
 from validation import validate_lead
 from crm import send_to_crm
 from notifications import send_notification
-from database import save_lead
+from lead_id import generate_lead_id
+from database import create_database, save_lead
 app = Flask(__name__)
+create_database()
 load_dotenv()
 # ==========================================
 # API KEY AUTHENTICATION DECORATOR
@@ -53,16 +52,6 @@ def authenticate_request():
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-
-
-# ==========================================
-# LOAD LAST LEAD ID
-# ==========================================
-
-with open("counter.json", "r") as file:
-    counter_data = json.load(file)
-
-lead_counter = counter_data["last_lead_id"]
 
 # ==========================================
 # GET ALL LEADS
@@ -145,17 +134,7 @@ def receive_lead():
     # CREATE LEAD ID
     # ==========================================
 
-    lead_counter += 1
-
-    # Save new Lead ID
-    with open("counter.json", "w") as file:
-
-        json.dump({
-            "last_lead_id": lead_counter
-        }, file)
-
-    # Add Lead ID to lead
-    lead["lead_id"] = f"LEAD-{lead_counter:03d}"
+    lead["lead_id"] = generate_lead_id()
 
     # ==========================================
     # ADD TIMESTAMP
