@@ -3,3 +3,4 @@ bottoken.txt
 __pycache__/
 *.pyc
 *.db
+counter.json
