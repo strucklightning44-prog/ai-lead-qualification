@@ -19,7 +19,13 @@ def create_database():
             age INTEGER,
             appointment_booked BOOLEAN,
             status TEXT,
-            received_at TEXT
+            received_at TEXT,
+            lead_score INTEGER,
+            lead_priority TEXT,
+            follow_up_action TEXT,
+            follow_up_timeframe TEXT,
+            follow_up_due_at TEXT,
+            follow_up_status TEXT
         )
     """)
 
@@ -35,6 +41,8 @@ def save_lead(lead):
 
     cursor = connection.cursor()
 
+    follow_up = lead.get("follow_up", {})
+
     cursor.execute("""
         INSERT INTO leads (
             lead_id,
@@ -46,9 +54,15 @@ def save_lead(lead):
             age,
             appointment_booked,
             status,
-            received_at
+            received_at,
+            lead_score,
+            lead_priority,
+            follow_up_action,
+            follow_up_timeframe,
+            follow_up_due_at,
+            follow_up_status
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         lead["lead_id"],
         lead["name"],
@@ -59,14 +73,16 @@ def save_lead(lead):
         lead["age"],
         lead["appointment_booked"],
         lead["status"],
-        lead["received_at"]
+        lead["received_at"],
+        lead.get("lead_score"),
+        lead.get("lead_priority"),
+        follow_up.get("action"),
+        follow_up.get("timeframe"),
+        follow_up.get("due_at"),
+        follow_up.get("status", "pending")
     ))
 
     connection.commit()
     connection.close()
 
     print("Lead saved to database!")
-
-
-if __name__ == "__main__":
-    create_database()

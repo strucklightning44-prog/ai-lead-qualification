@@ -1,14 +1,27 @@
 def qualify_lead(lead):
 
+    reasons = []
+
+    # VIP automatically qualifies
     if lead["vip_status"]:
-        return True
+        return True, ["VIP lead"]
 
-    if (
-        lead["interested"]
-        and lead["appointment_booked"]
-        and lead["budget"] >= 50000
-        and lead["age"] >= 18
-    ):
-        return True
+    # Check qualification requirements
 
-    return False
+    if not lead["interested"]:
+        reasons.append("Lead is not interested")
+
+    if not lead["appointment_booked"]:
+        reasons.append("Appointment not booked")
+
+    if lead["budget"] < 50000:
+        reasons.append("Budget below ₱50,000")
+
+    if lead["age"] < 18:
+        reasons.append("Lead is under 18")
+
+    # No rejection reasons = qualified
+    if not reasons:
+        return True, []
+
+    return False, reasons
